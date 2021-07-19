@@ -1,0 +1,192 @@
+//Isis Boone, Isiboone@uat.edu 
+//Last Tested 9:35 PM 7/18/2021 
+//This is an application for building a code breaker training simulation program for the CIA, and we will make it work like hangman would work.
+
+#include <iostream>
+#include <cstring>
+#include <vector>
+#include <ctime>
+#include <algorithm>
+
+using namespace std;
+
+
+//Global Vars
+vector<string> words;
+//int wrong;
+//string lettersUsed;
+//string currentStance;
+//char guess;
+//int max_Incorret;
+string userName;
+
+
+//This is the function for displaying the title of the program
+void Introduction() {
+	cout << "----Welcome to CIA Codebreaker!----\n\n";
+	cout << "You will go through this Code Breaker Training Simulation! GoodLuck Agent!\n";
+}
+
+//This is the function that askes the agent to log their name and addresses them through their name through the code.
+void Username() {
+	cout << "Enter your name here, Agent: \n" << endl;
+	cin >> userName;
+}
+
+//This is the function that gives you an overview of what Keywords II is to the agent playing.
+void Overview() {
+	cout << "*Overview:*\n";
+	cout << "The current automated programs that the CIA uses to decode enemy transmissions have always worked well until recently.\n";
+	cout << "Recently the enemy is using single scrambled low - tech keywords to signal other enemies to start attacks which our current code decryption programs have not been successful against.\n";
+	cout << "At the CIA they are developing a new codebreaking team that relies on human expertise to detect these low tech scrambled keywords.\n";
+	cout << "We are turning back the clock with this new team of human code breakers.\n";
+}
+
+//This is the function that gives you the directions of what Keyword II is to the agent playing.
+void Direction() {
+	cout << "*Directions:*\n";
+	cout << "The first step would be to identify when the simulation is starting so, you know when to start.\n";
+	cout << "The next step would be trying to get the 3 words that have been randomly assigned to you.\n";
+	cout << "You will know how many guesses you have left if you end up guessing incorrectly.\n";
+	cout << "The point of the simulation is to guess the 3 words that were given to you to solve.\n";
+	cout << "If you guess the first word correctly, you will be congratulated and you will move on to the next.\n";
+	cout << "You will know if you pass or fail the course. You will have the chance to take it again.\n";
+	cout << "--These are the end of the directions--";
+}
+
+//This is the function that holds the keywords for the simulation and for the agent to guess.
+void Keywords() {
+	words.push_back("undercover");
+	words.push_back("agency");
+	words.push_back("mall");
+	words.push_back("nintendo");
+	words.push_back("espionage");
+	words.push_back("mechanical");
+	words.push_back("warm");
+	words.push_back("insect");
+	words.push_back("obscurity");
+	words.push_back("adjacent");
+}
+
+//This is where the guessing of the game happens with randomizing the words. 
+void MainGuessing() {
+	srand(static_cast<unsigned int>(time(0)));
+	random_shuffle(words.begin(), words.end());
+	
+	char again = 'y';
+	// This is the maximum ammount of incorrect.
+	const int max_Incorret = 8;
+	int wrong = 0;
+	string currentWord;
+	// Position in word
+	string currentStance;
+	string lettersUsed = "";
+	//Counts the number of simulations played
+	int simulations = 1;
+
+	do {
+		// Runs the three CIA agent keyword guessing games
+		for (int roundNumber = 0; roundNumber < 3; roundNumber++) {
+			currentWord = words[roundNumber];
+			currentStance = string(currentWord.size(), '-');
+
+			// Main game loops
+			while ((wrong < max_Incorret) && (currentStance != currentWord)) {
+				// Tell recruit how many incorrect guesses he or she has left
+				cout << "Agent, You have " << (max_Incorret - wrong) << "  guesses left! \n";
+				// Show recruit the letters he or she has guessed
+				cout << "You have used the following letters: \n" << lettersUsed << endl;
+				// Show player how much of the secret word he or she has guessed
+				cout << "So far, the word is: \n" << currentStance << endl;
+
+				// for the next guess for the agent.
+				char guess;
+				cout << "Enter your letter guess here, Agent: ";
+				cin >> guess;
+				guess = tolower(guess);
+
+				// Ensures each guess is unique
+				while (lettersUsed.find(guess) != string::npos) {
+					// Get recruit ’s guess
+					cout << "You have already guessed " << guess << endl;
+					cout << "Enter your guess here: ";
+					cin >> guess;
+					guess = tolower(guess);
+				}
+
+				// Adds letters to used section
+				lettersUsed += guess;
+
+				//tells the agent it is correct
+				if (currentWord.find(guess) != string::npos) {
+					// Update the word guessed so far with the new letter
+					cout << "You are correct! " << guess << " is in the word!\n";
+					//Otherwise
+					for (unsigned int i = 0; i < currentWord.length(); i++)
+					{
+						if (currentWord[i] == guess)
+						{
+							currentStance[i] = guess;
+						}
+					}
+				}
+				//Tell the recruit the guess is incorrect
+				else {
+					cout << "Sorry Agent, " << guess << " is not in the word. \n";
+					//Increment the number of incorrect guesses the recruit has made
+					++wrong;
+				}
+			}
+
+			// If the recruit has made too many incorrect guesses
+			if (wrong == max_Incorret) {
+				//Tell the recruit that he or she has failed the Keywords II course.
+				cout << "You are not CIA Material, Sorry Agent!\n";
+			} else {
+				//Congratulate the recruit on guessing the secret words
+				cout << "\nAgent, You guessed it, Great Job!" << endl;
+				cout << "The word was : " << currentWord << "!" << endl;
+				cout << "Completed round " << roundNumber + 1 << " of 3!!!\n" << endl;
+			}
+
+			wrong = 0;
+			lettersUsed = "";
+		}
+		
+		cout << "Do you want to try again? (y/n)" << endl;
+		cin >> again;
+		cout << "You have run " << simulations << " simulations." << endl;
+		simulations++;
+	} while (again == 'y');
+}
+
+void endGame() {
+	cout << "You have reached the end, Agent!" << endl;
+	system("pause");
+}
+
+int main() {
+	// Display Title of the program to the user
+	Introduction();
+
+	// Ask the recruit to log in using their name
+	// Hold the recruit's name in a var, and address them by it throughout the simulation.
+	Username();
+
+	// Display an overview of what Keywords II is to the recruit 
+	Overview();
+
+	// Display directions to the recruit on how to use Keywords
+	Direction();
+
+	// Create a collection of 10 words you had written down manually
+	Keywords();
+
+	//This is the main part of the guessing simulations and where the agent will be guessing the letters
+	MainGuessing();
+
+	//This is the function that ends the program. 
+	endGame();
+	
+	return 0;
+	}
